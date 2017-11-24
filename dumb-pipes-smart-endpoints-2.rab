@@ -1,0 +1,299 @@
+= Dumb Pipes and Smart-Endpoints
+
+: subtitle
+   Part 2
+: author
+   Giovanni Sakti
+: institution
+   Starqle
+% : content-source
+%    id_ruby
+% : date
+%    2017-11-01
+: theme
+   starqle
+
+= Messaging
+
+(('tag:center'))Messaging
+
+== properties
+  : hide-title
+    true
+
+= Messaging
+
+(('tag:center'))We will continue by discussing the second type of communication: ((*messaging*)).
+
+= Messaging
+
+(('tag:center'))Unlike RPI, services communicating with messaging ((*does not wait*)) for response.
+
+= Messaging
+
+(('tag:center'))Because messaging is a form of ((*asynchronous*)) communication.
+
+= Messaging
+
+(('tag:center'))Therefore ((*multiple calls*)) can be made without waiting for response.
+
+= Messaging
+
+(('tag:center'))The service will process the messages ((*whenever*)) they see fit and at their ((*own pace*)).
+
+= Advantages
+
+(('tag:center'))There are some ((*advantages*)) associated with messaging.
+
+== properties
+  : hide-title
+    true
+
+= Advantages
+
+* Decouples the client from the service
+# A client makes a request simply by sending a message to the appropriate channel. The client is completely unaware of the service instances. It does not need to use a discovery mechanism to determine the location of a service instance.
+
+* Message buffering
+# With a synchronous request/response protocol, such as HTTP, both the client and service must be available for the duration of the exchange. In contrast, a message broker queues up the messages written to a channel until they can be processed by the consumer. This means, for example, that an online store can accept orders from customers even when the order fulfillment system is slow or unavailable. The order messages simply queue up.
+
+* Flexible client-service interactions
+# Messaging supports all of the interaction styles described earlier.
+
+* Explicit inter-process communication
+# RPC-based mechanisms attempt to make invoking a remote service look the same as calling a local service. However, because of the laws of physics and the possibility of partial failure, they are in fact quite different. Messaging makes these differences very explicit so developers are not lulled into a false sense of security.
+
+= Advantages
+
+(('tag:center'))Sometimes people think that using messaging can increase application performance.
+
+= Advantages
+
+(('tag:center'))This is not true, but messaging can help services because they can ((*buffer*)) the messages.
+
+= Advantages
+
+(('tag:center'))Therefore ((*eliminate*)) the possibility of ((*dropped*)) requests due to timeout.
+
+= Disadvantages
+
+(('tag:center'))But, there are also some ((*disadvantages*)) that we must be aware of.
+
+== properties
+  : hide-title
+    true
+
+= Disadvantages
+
+* Additional operational complexity
+# The messaging system is yet another system component that must be installed, configured, and operated. It’s essential that the message broker is highly available, otherwise, system reliability is impacted.
+
+* Complexity of implementing request/response-based interaction
+# Request/response-style interaction requires some work to implement. Each request message must contain a reply channel identifier and a correlation identifier. The service writes a response message containing the correlation ID to the reply channel. The client uses the correlation ID to match the response with the request. It is often easier to use an IPC mechanism that directly supports request/response.
+
+= Multiple Receivers
+
+(('tag:center'))Multiple Receivers
+
+== properties
+  : hide-title
+    true
+
+= Multiple Receivers
+
+(('tag:center'))Messaging enables us to send messages into ((*multiple*)) receivers.
+
+= Multiple Receivers
+
+(('tag:center'))For example, using publish-subcribe pattern, interested services can ((*subscribe*)) into a particular topic at a particular service.
+
+= Multiple Receivers
+
+(('tag:center'))Whenever new update for that topic comes out, the client will then ((*publish*)) and every subscriber parties will receive the message.
+
+= Messaging and Microservices
+
+(('tag:center'))Messaging and Microservices
+
+== properties
+  : hide-title
+    true
+
+= Messaging and Microservices
+
+(('tag:center'))The preferred way for microservices to do messaging is to utilize ((*lightweight*)) messaging system.
+
+= Messaging and Microservices
+
+(('tag:center'))Because we ((*don't*)) want to ((*put logic*)) on our messaging system, to comply with "dumb pipes and smart endpoints" mantra.
+
+= Messaging and Microservices
+
+(('tag:center'))We expect our messaging system to be our ((*intermediary*)), acting as a buffer with reliability and integrity checks.
+
+= Messaging and Microservices
+
+(('tag:center'))But the logic still lives in the endpoints that are producing and consuming the messages.
+
+= Messaging System
+
+(('tag:center'))Messaging System
+
+== properties
+  : hide-title
+    true
+
+= Messaging System
+
+(('tag:center'))There are many messaging systems to choose from.
+
+= Messaging System
+
+(('tag:center'))There are messaging systems that support ((*standard*)) protocols, such as AMQP and STOMP.
+
+= Messaging System
+
+(('tag:center'))There are also messaging systems that use ((*proprietary*)) but documented protocols.
+
+= Messaging System
+
+Some open source examples:
+
+* RabbitMQ
+* Apache Kafka
+* Apache ActiveMQ
+* NSQ
+
+= Messaging System
+
+(('tag:center'))At high level, they all support some form of ((*messages*)) and ((*channels*)) / topics.
+
+= Messaging System
+
+(('tag:center'))They also promotes ((*reliability*)) and ((*scalability*)).
+
+= Messaging System
+
+(('tag:center'))However the ((*details*)) between them ((*are different*)) and further studies are required to utilize each messaging systems properly.
+
+= No Communication
+
+(('tag:center'))No Communication
+
+== properties
+  : hide-title
+    true
+
+= No Communication
+
+(('tag:center'))We now have discussed two possible communication options: RPI & Messaging.
+
+= No Communication
+
+(('tag:center'))We also have learned the "dumb pipes, smart endpoints" mantra.
+
+= No Communication
+
+(('tag:center'))But in microservices, it's strongly recommended to ((*reduce*)) communication whenever possible.
+
+= No Communication
+
+(('tag:center'))It's even better if there is ((*no communication*)).
+
+= No Communication
+
+(('tag:center'))A ((*self-contained*)) service, service that can serve its client without connecting to other service is the ((*ideal*)) that we should strive for.
+
+= No Communication
+
+(('tag:center'))If you have to call another services before serving a request..
+
+= No Communication
+
+(('tag:center'))..that means there is an architectural problem.
+
+= No Communication
+
+(('tag:center'))Your service response time will increase and introduce ((*coupling*)) between services.
+
+= Data Duplication
+
+(('tag:center'))Then, how can we reduce or ((*eliminate*)) communication between services?
+
+== properties
+  : hide-title
+    true
+
+= Data Duplication
+
+(('tag:center'))If your service needs to ((*read data*)) from another service, you can try to ((*duplicate*)) the data to your service.
+
+== properties
+  : hide-title
+    true
+
+= Data Duplication
+
+For example:
+
+* We have ((*User*)) data on user profile service.
+* We can copy ((*User*)) data as ((*Buyer*)) data on our order service.
+
+= Data Duplication
+
+Example (cont'd):
+
+* We only copy ((*necessary*)) attributes, not everything.
+* We ((*eliminate*)) the need for order service to call user profile service.
+* Bonus: We also use ((*appropriate term*)) for the order bounded context.
+
+= Data Duplication
+
+(('tag:center'))But data duplication can lead to ((*consistency problem*)), right?
+
+= Data Duplication
+
+(('tag:center'))To solve this, we can use ((*messaging*)), particularly the publish-subscribe pattern.
+
+= Data Duplication
+
+(('tag:center'))And be mindful with ((*eventual consistency*)).
+
+= Cross-services writes
+
+(('tag:center'))On the other hand, if you have to ((*write*)) data into another services.
+
+== properties
+  : hide-title
+    true
+
+= Cross-services writes
+
+(('tag:center'))Then you have to do it ((*asynchronously*)) or outside of your user request-response cycle.
+
+= Cross-services writes
+
+(('tag:center'))For example, if you have to update data in another service.
+
+= Cross-services writes
+
+(('tag:center'))You can send message to that particular service, after the request-response cycle is over.
+
+= Summary
+
+So to summarize:
+
+* Read dependency: duplicate data
+* Write dependency: asynchronously
+
+== properties
+  : hide-title
+    true
+
+= Thanks
+
+(('tag:center'))Thanks!
+
+== properties
+  : hide-title
+    true
